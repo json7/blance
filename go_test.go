@@ -15,7 +15,7 @@ func Benchmark_ys(t *testing.B) {
 		},
 		{
 			Service: "视频去重2",
-			Weight: 17,
+			Weight: 2,
 			Provider: "bd",
 		},
 	}

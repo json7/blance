@@ -5,7 +5,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type blance struct {
+type Blance struct {
 	counter int //序列计数器
 	curweight int //当前权重
 	servers []Servers //节点列表
@@ -17,8 +17,8 @@ type Servers struct {
 	Provider string
 }
 
-func NewBlance(sers []Servers) (*blance, error) {
-	b := blance{counter: -1, curweight: 0, servers: make([]Servers, len(sers))}
+func NewBlance(sers []Servers) (*Blance, error) {
+	b := Blance{counter: -1, curweight: 0, servers: make([]Servers, len(sers))}
 	l := copy(b.servers, sers)
 	if len(sers)<=0 || l!=len(sers) {
 		return nil, errors.New("the numbers of servers is 0")
@@ -27,7 +27,7 @@ func NewBlance(sers []Servers) (*blance, error) {
 }
 
 //获取权重总和
-func (self *blance) getsum(s []Servers) int {
+func (self *Blance) getsum(s []Servers) int {
 	r := 0
 	for _, server := range s {
 		r += server.Weight
@@ -36,7 +36,7 @@ func (self *blance) getsum(s []Servers) int {
 }
 
 //获取最大公约数
-func (self *blance) gcd(a int, b int) int {
+func (self *Blance) gcd(a int, b int) int {
 	c := 0
 	for b>0 {
 		c = b
@@ -47,7 +47,7 @@ func (self *blance) gcd(a int, b int) int {
 }
 
 //获取最大公约数
-func (self *blance) getgcd(s []Servers) int {
+func (self *Blance) getgcd(s []Servers) int {
 	res := s[0].Weight
 	for i:=1; i<len(s); i++ {
 		max := int(math.Max(float64(res), float64(s[i].Weight)))
@@ -58,7 +58,7 @@ func (self *blance) getgcd(s []Servers) int {
 }
 
 //获取最大的权重
-func (self *blance) getmax(s []Servers) int {
+func (self *Blance) getmax(s []Servers) int {
 	m := 0
 	for _, server := range s {
 		if server.Weight > m {
@@ -68,7 +68,7 @@ func (self *blance) getmax(s []Servers) int {
 	return m
 }
 
-func (self *blance) lb_wrr__getwrr(s []Servers, gcd int, maxweight int, i *int, cw *int) int {
+func (self *Blance) lb_wrr__getwrr(s []Servers, gcd int, maxweight int, i *int, cw *int) int {
 	for {
 		*i = (*i+1)%len(s)
 		if *i == 0{
@@ -86,7 +86,7 @@ func (self *blance) lb_wrr__getwrr(s []Servers, gcd int, maxweight int, i *int, 
 	}
 }
 
-func (self *blance) GetServer() Servers {
+func (self *Blance) GetServer() Servers {
 	gcd := self.getgcd(self.servers)
 	max := self.getmax(self.servers)
 	self.lb_wrr__getwrr(self.servers, gcd, max, &self.counter, &self.curweight)
