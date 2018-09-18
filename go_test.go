@@ -1,7 +1,7 @@
 package test
 
 import (
-	"git.qutoutiao.net/yangsai/blance/strategy"
+	"github.com/yangsai/blance/strategy"
 	"testing"
 )
 
