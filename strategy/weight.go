@@ -15,6 +15,7 @@ type Server struct {
 	Service string
 	Weight int
 	Provider string
+	Extends interface{}
 }
 
 func NewBlance(sers []Server) (*Blance, error) {
