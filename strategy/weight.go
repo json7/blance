@@ -8,17 +8,17 @@ import (
 type Blance struct {
 	counter int //序列计数器
 	curweight int //当前权重
-	servers []Servers //节点列表
+	servers []Server //节点列表
 }
 
-type Servers struct {
+type Server struct {
 	Service string
 	Weight int
 	Provider string
 }
 
-func NewBlance(sers []Servers) (*Blance, error) {
-	b := Blance{counter: -1, curweight: 0, servers: make([]Servers, len(sers))}
+func NewBlance(sers []Server) (*Blance, error) {
+	b := Blance{counter: -1, curweight: 0, servers: make([]Server, len(sers))}
 	l := copy(b.servers, sers)
 	if len(sers)<=0 || l!=len(sers) {
 		return nil, errors.New("the numbers of servers is 0")
@@ -27,7 +27,7 @@ func NewBlance(sers []Servers) (*Blance, error) {
 }
 
 //获取权重总和
-func (self *Blance) getsum(s []Servers) int {
+func (self *Blance) getsum(s []Server) int {
 	r := 0
 	for _, server := range s {
 		r += server.Weight
@@ -47,7 +47,7 @@ func (self *Blance) gcd(a int, b int) int {
 }
 
 //获取最大公约数
-func (self *Blance) getgcd(s []Servers) int {
+func (self *Blance) getgcd(s []Server) int {
 	res := s[0].Weight
 	for i:=1; i<len(s); i++ {
 		max := int(math.Max(float64(res), float64(s[i].Weight)))
@@ -58,7 +58,7 @@ func (self *Blance) getgcd(s []Servers) int {
 }
 
 //获取最大的权重
-func (self *Blance) getmax(s []Servers) int {
+func (self *Blance) getmax(s []Server) int {
 	m := 0
 	for _, server := range s {
 		if server.Weight > m {
@@ -68,7 +68,7 @@ func (self *Blance) getmax(s []Servers) int {
 	return m
 }
 
-func (self *Blance) lb_wrr__getwrr(s []Servers, gcd int, maxweight int, i *int, cw *int) int {
+func (self *Blance) lb_wrr__getwrr(s []Server, gcd int, maxweight int, i *int, cw *int) int {
 	for {
 		*i = (*i+1)%len(s)
 		if *i == 0{
@@ -86,7 +86,7 @@ func (self *Blance) lb_wrr__getwrr(s []Servers, gcd int, maxweight int, i *int, 
 	}
 }
 
-func (self *Blance) GetServer() Servers {
+func (self *Blance) GetServer() Server {
 	gcd := self.getgcd(self.servers)
 	max := self.getmax(self.servers)
 	self.lb_wrr__getwrr(self.servers, gcd, max, &self.counter, &self.curweight)
